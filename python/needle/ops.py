@@ -8,7 +8,9 @@ from .autograd import TensorTuple, TensorTupleOp
 from . import init
 import numpy
 import math
-
+import os
+import time
+from web3 import Web3
 from .backend_selection import array_api, NDArray
 
 
@@ -376,6 +378,60 @@ class MatMul(TensorOp):
 def matmul(a, b):
     return MatMul()(a, b)
 
+class Transaction(object):
+    def __init__(self, tx_hash, shape):
+        self.tx_hash = tx_hash
+        self.shape = shape
+    
+    def get_result(self):
+        node_ip_address = os.getenv('NEEDLE_NODE_ADDRESS')
+        bootnode_w3 = Web3(Web3.HTTPProvider(node_ip_address))
+        non_empty_block=None
+        while True:
+            num_block=bootnode_w3.eth.get_block_number()
+            for i in range(num_block):
+                block=bootnode_w3.eth.get_block(i)
+                if self.tx_hash in block['transactions']:
+                    non_empty_block=block
+                    break
+            if non_empty_block is not None:
+                break
+            time.sleep(1)
+        result = []
+        for b in non_empty_block['nonce']:
+            result.append(int(b))
+        result = numpy.array(result)
+        result = result.reshape(self.shape)
+        return result
+        
+
+def decentralized_matmul(a, b):
+    def numpy_array_to_string(arr):
+        res=''
+        for row in arr:
+            for ele in row:
+                res+=str(int(ele))+','
+            res=res[:-1]+'A'
+        return res[:-1]
+
+    a_str = numpy_array_to_string(a.numpy())
+    b_str = numpy_array_to_string(b.numpy())
+    data=a_str+'*'+b_str
+    passwd = os.getenv('NEEDLE_ACCOUNT_PASSWORD')
+    account_address = os.getenv('NEEDLE_ACCOUNT_ADDRESS')
+    node_ip_address = os.getenv('NEEDLE_NODE_ADDRESS')
+    bootnode_w3 = Web3(Web3.HTTPProvider(node_ip_address))
+    bootnode_w3.geth.personal.unlock_account(account_address, passwd)
+    print(data)
+    tx_hash=bootnode_w3.eth.send_transaction({
+        'from': account_address,
+        'to': "0x0000000000000000000000000000000000000000",
+        'value': 0,    
+        'data': data.encode('utf-8'),
+
+    })
+    shape=(a.shape[0],b.shape[1])
+    return Transaction(tx_hash,shape)
 
 class Negate(TensorOp):
     def compute(self, a):
