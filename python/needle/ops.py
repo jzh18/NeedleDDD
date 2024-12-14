@@ -11,6 +11,7 @@ import math
 import os
 import time
 from web3 import Web3
+from web3.middleware import SignAndSendRawMiddlewareBuilder
 from .backend_selection import array_api, NDArray
 
 
@@ -405,7 +406,7 @@ class Transaction(object):
         return result
         
 
-def decentralized_matmul(a, b):
+def decentralized_matmul(a, b, gas=6000000, gas_price=2000000000):
     def numpy_array_to_string(arr):
         res=''
         for row in arr:
@@ -417,18 +418,19 @@ def decentralized_matmul(a, b):
     a_str = numpy_array_to_string(a.numpy())
     b_str = numpy_array_to_string(b.numpy())
     data=a_str+'*'+b_str
-    passwd = os.getenv('NEEDLE_ACCOUNT_PASSWORD')
+    private_key = os.getenv('NEEDLE_ACCOUNT_PRIVATEKEY')
     account_address = os.getenv('NEEDLE_ACCOUNT_ADDRESS')
     node_ip_address = os.getenv('NEEDLE_NODE_ADDRESS')
     bootnode_w3 = Web3(Web3.HTTPProvider(node_ip_address))
-    bootnode_w3.geth.personal.unlock_account(account_address, passwd)
-    print(data)
+    account = bootnode_w3.eth.account.from_key(private_key)
+    bootnode_w3.middleware_onion.inject(SignAndSendRawMiddlewareBuilder.build(account), layer=0)
     tx_hash=bootnode_w3.eth.send_transaction({
         'from': account_address,
         'to': "0x0000000000000000000000000000000000000000",
         'value': 0,    
         'data': data.encode('utf-8'),
-
+        'gas': gas,
+        'gasPrice': gas_price
     })
     shape=(a.shape[0],b.shape[1])
     return Transaction(tx_hash,shape)
