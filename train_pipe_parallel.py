@@ -12,11 +12,10 @@ if __name__ == "__main__":
     np.random.seed(0)
     rank, device = ddp.init()
     
-    num_microbatches = 4  # Number of microbatches in pipeline
-
     # Initialize dataset on all GPUs
     dataset = ndl.data.CIFAR10Dataset("data/cifar-10-batches-py", train=True)
     train_loader = ndl.data.DataLoader(dataset, 128*num_microbatches, device=device, dtype="float32")
+
 
     print(f'dataset length: {len(dataset)}')
 
@@ -80,7 +79,6 @@ if __name__ == "__main__":
             X_mb = microbatches_X[step]
             out = model(X_mb)
             forward_outputs[step] = out  # Store the output with step as key
-
             out = forward_outputs.get(step)  # Retrieve the output for this step
             if out is not None:
                 if rank == 3:
@@ -92,6 +90,7 @@ if __name__ == "__main__":
                         acc = correct / microbatches_y[step].shape[0]
                         # Print metrics
                         print(f'Batch {i*num_microbatches}, Microbatch {step}, Acc: {acc:.4f}, Loss: {loss.numpy():.4f}')
+
 
                     model.backward(out.grad)
                 else:
@@ -106,4 +105,5 @@ if __name__ == "__main__":
 
     if rank == 0:
         end = time.time()
-        print(f'Training Time: {end-begin}')            
+
+        print(f'Training Time: {end-begin}')           
