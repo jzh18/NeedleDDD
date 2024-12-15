@@ -48,7 +48,6 @@ if __name__ == "__main__":
         X_data = comm.bcast(X_data, root=0)
         y_data = comm.bcast(y_data, root=0)
 
-
         # Create tensors on each GPU
         X = ndl.Tensor(X_data, device=device)
         y = ndl.Tensor(y_data, device=device)
