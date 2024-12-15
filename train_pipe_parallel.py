@@ -14,7 +14,8 @@ if __name__ == "__main__":
     
     # Initialize dataset on all GPUs
     dataset = ndl.data.CIFAR10Dataset("data/cifar-10-batches-py", train=True)
-    train_loader = ndl.data.DataLoader(dataset, 128, device=device, dtype="float32")
+    train_loader = ndl.data.DataLoader(dataset, 128*num_microbatches, device=device, dtype="float32")
+
 
     print(f'dataset length: {len(dataset)}')
 
@@ -27,8 +28,6 @@ if __name__ == "__main__":
 
     
     begin = time.time()
-
-    num_microbatches = 4  # Number of microbatches in pipeline
     
     for i, batch in enumerate(train_loader):
         # Split batch into microbatches
@@ -80,20 +79,18 @@ if __name__ == "__main__":
             X_mb = microbatches_X[step]
             out = model(X_mb)
             forward_outputs[step] = out  # Store the output with step as key
-
-        # Backward pass loop
-        for step in range(num_microbatches):
             out = forward_outputs.get(step)  # Retrieve the output for this step
             if out is not None:
                 if rank == 3:
                     loss = loss_fn(out, microbatches_y[step])
                     loss.backward()
-                    if i % 100 == 0:
+                    if (i*num_microbatches)% 100 == 0:
                         # Calculate accuracy
                         correct = np.sum(np.argmax(out.numpy(), axis=1) == microbatches_y[step].numpy())
                         acc = correct / microbatches_y[step].shape[0]
                         # Print metrics
-                        print(f'Batch {i}, Microbatch {num_microbatches}, Acc: {acc:.4f}, Loss: {loss.numpy():.4f}')
+                        print(f'Batch {i*num_microbatches}, Microbatch {step}, Acc: {acc:.4f}, Loss: {loss.numpy():.4f}')
+
 
                     model.backward(out.grad)
                 else:
@@ -108,4 +105,5 @@ if __name__ == "__main__":
 
     if rank == 0:
         end = time.time()
-        print(f'Training Time: {end-begin}')
+
+        print(f'Training Time: {end-begin}')           
