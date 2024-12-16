@@ -5,6 +5,7 @@ Authors:
 
 ## Introduction
 NeedleDDD is a machine learning framework comparable to TensorFlow and PyTorch, offering a comprehensive set of libraries for building, training, and deploying deep learning models. 
+The framework is derived from the CMU 10-414/714: Deep Learning Systems course.
 It can be used both on CPUs and GPUs.
 
 The framework supports three parallelism strategies: data parallelism, model parallelism, and pipeline parallelism. 
@@ -21,4 +22,5 @@ Please refer to https://github.com/jzh18/go-ethereum for more information about 
 All the authors engaged in in-depth discussions on implementing decentralized features, particularly focusing on verifying the nodes working honestly.
 And different approaches were proposed to achieve this goal.
 Here is the detailed contribution of each author:
-* Huaifeng Zhang: Found the matrix multiplication verification algorithm and implemented the decentralized computing feature.
+* Huaifeng Zhang: 
+    * Huaifeng Zhang found the [Freivalds' algorithm](https://en.wikipedia.org/wiki/Freivalds%27_algorithm) to verify the matrix multiplication results. He also designed the architecture of the decentralized network. He implemented the decentralized `matmul` operation in the NeedleDDD framework. The `matmul` operation is packaged as a Transaction and submitted to a decentralized network to be executed by the node in the network. He also developed a client based on the [Geth](https://github.com/jzh18/go-ethereum) client to create a decentralized network. Specifically, he changed the consensus mechanism of the Geth client from a Proof of Work (PoW) to a Proof of Useful Work (PoUW) mechanism. The nodes in the network are rewarded based on the number of correct results they provide. The client can also verify the results of the nodes using the Freivalds' algorithm.
