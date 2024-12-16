@@ -2,6 +2,7 @@
 Authors:
 
 * Huaifeng Zhang, Chalmers University of Technology
+* Hantang Zhang, Umeå University
 
 ## Introduction
 NeedleDDD is a machine learning framework comparable to TensorFlow and PyTorch, offering a comprehensive set of libraries for building, training, and deploying deep learning models. 
@@ -24,3 +25,6 @@ And different approaches were proposed to achieve this goal.
 Here is the detailed contribution of each author:
 * Huaifeng Zhang: 
     * Huaifeng Zhang found the [Freivalds' algorithm](https://en.wikipedia.org/wiki/Freivalds%27_algorithm) to verify the matrix multiplication results. He also designed the architecture of the decentralized network. He implemented the decentralized `matmul` operation in the NeedleDDD framework. The `matmul` operation is packaged as a Transaction and submitted to a decentralized network to be executed by the node in the network. He also developed a client based on the [Geth](https://github.com/jzh18/go-ethereum) client to create a decentralized network. Specifically, he changed the consensus mechanism of the Geth client from a Proof of Work (PoW) to a Proof of Useful Work (PoUW) mechanism. The nodes in the network are rewarded based on the number of correct results they provide. The client can also verify the results of the nodes using the Freivalds' algorithm.
+
+* Hantang Zhang:
+   * Hantang gained a comprehensive understanding of the overall project workflow. He conducted an in-depth analysis of the autodiff and GEMM algorithms, identifying their optimal use cases in the project. He wrote the "Introduce Autodiff" and "Introduce GEMM" sections to explain their roles and implementation details.
