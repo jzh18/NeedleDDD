@@ -2,6 +2,7 @@
 Authors:
 
 * Huaifeng Zhang, Chalmers University of Technology
+* Qi Shao, Chalmers University of Technology
 * Hantang Zhang, Umeå University
 * Eric Olsson, Chalmers University of Technology
 
@@ -34,3 +35,7 @@ Here is the detailed contribution of each author:
 
 * Eric Olsson:
     * Eric investigated how to achieve the project goal of decentralized machine learning, while retaining sufficient privacy and security. He formulated a threat model for the proposed decentralized needle scheme. He then surveyed relevant work in decentralized data marketplaces, federated learning, and machine learning. This survey found OmniLytics, a highly relevant blockchain-based secure data trading marketplace. Eric finally highlighted remaining flaws within the threat model, and future work. This work is described in the 'Decentralized S&P Analysis' section.
+ 
+* Qi Shao:
+    * Implement model parallel training, split model layers into different gpu and pass intermedidate forward and backward result.
+    * Implement datapipeline model parallel training, spilt data into batches to flow in pipeline and work together with model parallel training. Try to improve the performance.
