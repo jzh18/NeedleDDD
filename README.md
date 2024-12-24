@@ -1,4 +1,4 @@
-# DDDML
+# NeedleDDD: A Distributed and Decentralized Machine Learning Framework
 Authors:
 
 * Huaifeng Zhang, Chalmers University of Technology
@@ -19,6 +19,13 @@ Please refer to https://github.com/jzh18/go-ethereum for more information about 
 
 A sketch of the decentralized computing system has been analyzed from a security perspective.
 
+## Quick Start
+1. Install dependencies: `!pip3 install pybind11`
+2. Build C and CUDA backend: `make`
+3. Run unit tests to verify the framework is working correctly: `!python3 -m pytest -l -v -k "nd_backend"`. This should ouput `PASSED` for all tests.
+
+## Distributed ML and Decentralized ML
+Check the [Presentation Doc](https://github.com/jzh18/NeedleDDD/blob/main/final_project_report.ipynb) for more information.
 
 ## Documents for the Presentation
 * [Presentation Doc](https://github.com/jzh18/NeedleDDD/blob/main/final_project_report.ipynb)
